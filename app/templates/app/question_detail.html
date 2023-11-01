@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% load custom_filters %}
+
+{% block title %}{{ question.title }}{% endblock %}
+
+{% block content %}
+    <h1>{{ question.title }}</h1>
+    <p>{{ question.content }}</p>
+    
+    <h2>Answers:</h2>
+    {% if answers %}
+        <ul class="answer-list">
+            {% for answer in answers %}
+                <div class="answer-item">
+                    <li class="">{{ answer.content }}</li>
+                    <div class="datetime">
+                        <div class="mt-1">{{ answer.timestamp }}</div>
+                    </div>
+                    {% if request.user == answer.user %}
+                        <a href="{% url 'edit_answer' answer.id %}">Edit</a>
+                    {% endif %}
+                    <!-- if user is authenticated   -->
+                    {% if request.user.is_authenticated %}
+                        <!-- if user is the author of the answer -->
+                        {% if request.user.id|custom_filter:answer %}
+                            <a href="{% url 'unlike_answer' answer.id %}">Unlike</a>
+                        {% else %} 
+                            <a href="{% url 'like_answer' answer.id %}">Like</a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No one has answered yet.</p>
+    {% endif %}
+        <style>
+            .pagination {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin-top: 20px;
+            }
+            
+            .pagination a {
+                color: #007bff;
+                text-decoration: none;
+                margin: 0 10px;
+            }
+            
+            .pagination .current-page {
+                margin: 0 10px;
+                font-weight: bold;
+            }
+
+            .answer-list {
+                list-style: none;
+                padding: 0;
+            }
+
+            .answer-item {
+                margin-bottom: 10px;
+                border: 1px solid #ccc;
+                padding: 10px;
+                border-radius: 5px;
+            }
+        </style>
+        
+        <div class="pagination p-1">
+            {% if has_previous %}
+                <a class="" href="?page=1">First</a>
+                <a href="?page={{ current_page|add:"-1" }}">Previous</a>
+            {% endif %}
+            
+            <span class="current-page">Page {{ current_page }} of {{ answers.paginator.num_pages }}</span>
+            
+            {% if has_next %}
+                <a href="?page={{ current_page|add:"1" }}">Next</a>
+                
+                <a href="?page={{ answers.paginator.num_pages }}">Last</a>
+            {% endif %}
+        </div>
+        
+        {# Add a form to post new answers if needed #}
+        
+            {# Link to like answers if needed #}            
+            <h2>Post an Answer:</h2>
+            <form method="POST" action="{% url 'add_answer' question.id %}" class="answer-form">
+                {% csrf_token %}
+                <textarea name="content" id="content" rows="5" cols="50" placeholder="Type your answer here"></textarea>
+                <br>
+                <input type="submit" value="Submit" class="btn btn-primary">
+            </form>
+
+            <style>
+                .answer-form {
+                    margin-top: 20px;
+                    border: 1px solid #ccc;
+                    padding: 10px;
+                    border-radius: 5px;
+                }
+
+                .answer-form textarea {
+                    width: 100%;
+                    border: none;
+                    resize: none;
+                    font-size: 16px;
+                    padding: 10px;
+                    margin-bottom: 10px;
+                }
+
+                .answer-form input[type="submit"] {
+                    background-color: #007bff;
+                    color: #fff;
+                    border: none;
+                    padding: 10px 20px;
+                    border-radius: 5px;
+                    cursor: pointer;
+                }
+
+                .answer-form input[type="submit"]:hover {
+                    background-color: #0069d9;
+                }
+            </style>
+
+
+
+            
+    {% endblock %}
+

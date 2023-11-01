@@ -1,0 +1,70 @@
+<!-- FILEPATH: /root/hw/python/quora_clone/app/templates/app/list_question.html -->
+{% extends 'base.html' %}
+{% block title %} list questions {% endblock %}
+
+{% block content %}
+{% for question in questions %}
+<div class="">
+    <div class="question">
+        <h2 class="question-title"><a href="{% url 'question_detail' question.id %}">{{ question.title }}</a></h2>
+        <p class="question-content">{{ question.content }}</p>
+        <p class="question-meta">Posted by: {{ question.user.username }} at {{ question.timestamp }}</p>
+    </div>
+    {% endfor %}
+
+    <div class="pagination p-1">
+        {% if has_previous %}
+            <a class="" href="?page=1">First</a>
+            <a href="?page={{ current_page|add:"-1" }}">Previous</a>
+        {% endif %}
+        
+        <span class="current-page">Page {{ current_page }} of {{ questions.paginator.num_pages }}</span>
+        
+        {% if has_next %}
+            <a href="?page={{ current_page|add:"1" }}">Next</a>
+            
+            <a href="?page={{ questions.paginator.num_pages }}">Last</a>
+        {% endif %}
+    </div>
+
+    <style>
+        .question {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+
+        .question-title {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .question-content {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .question-meta {
+            font-size: 14px;
+            color: #666;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+        
+        .pagination a {
+            color: #007bff;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        
+        .pagination .current-page {
+            margin: 0 10px;
+            font-weight: bold;
+        }
+
+    </style>
+    {% endblock %}
